@@ -54,7 +54,6 @@ class Enlace:
         
         self.linha_serial.enviar(bytes.fromhex("C0") + datagrama + bytes.fromhex("C0"))
         
-        
         pass
 
     def __raw_recv(self, dados):
