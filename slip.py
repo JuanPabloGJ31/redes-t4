@@ -43,6 +43,7 @@ class Enlace:
     def __init__(self, linha_serial):
         self.linha_serial = linha_serial
         self.linha_serial.registrar_recebedor(self.__raw_recv)
+        self.acumul = b''
 
     def registrar_recebedor(self, callback):
         self.callback = callback
@@ -67,4 +68,20 @@ class Enlace:
         # vir quebrado de várias formas diferentes - por exemplo, podem vir
         # apenas pedaços de um quadro, ou um pedaço de quadro seguido de um
         # pedaço de outro, ou vários quadros de uma vez só.
+
+        if bytes.fromhex('C0') in dados:
+            dados = self.acumul + dados
+            self.acumul = dados.split(bytes.fromhex('C0'))[-1]
+            dados = dados.split(bytes.fromhex('C0'))[0:-1]
+            for datagrama in dados:
+                if datagrama !=b'':
+                    datagrama = datagrama.replace(bytes.fromhex("DBDC"), bytes.fromhex("C0"))
+                    datagrama = datagrama.replace(bytes.fromhex("DBDD"), bytes.fromhex("DB"))
+                    try:
+                        self.callback(datagrama)
+                    except:
+                        pass
+        else:
+            self.acumul += dados
+
         pass
