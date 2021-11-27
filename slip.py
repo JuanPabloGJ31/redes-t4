@@ -71,8 +71,10 @@ class Enlace:
 
         if bytes.fromhex('C0') in dados:
             dados = self.acumul + dados
+            
             self.acumul = dados.split(bytes.fromhex('C0'))[-1]
             dados = dados.split(bytes.fromhex('C0'))[0:-1]
+            
             for datagrama in dados:
                 if datagrama !=b'':
                     datagrama = datagrama.replace(bytes.fromhex("DBDC"), bytes.fromhex("C0"))
